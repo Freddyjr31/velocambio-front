@@ -1,59 +1,119 @@
-# VelocambioFront
+# Velocambio
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.8.
+Aplicación web para consultar tasas de cambio y convertir divisas en Venezuela. Muestra cotizaciones del **USD oficial (BCV)**, **USD promedio del mercado**, **EUR oficial** y **USDT P2P (Binance)**, con una calculadora integrada para conversiones rápidas.
 
-## Development server
+---
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
-```
+- Visualización de tasas de cambio en tiempo real (USD, EUR, USDT)
+- Calculadora de conversión entre divisas (USD/VES, EUR/VES, USDT/VES)
+- Selección de tasa de cambio preferida
+- Tasa de cambio personalizada
+- Copia de resultados al portapapeles
+- Diseño oscuro moderno inspirado en la app móvil
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+| Tecnología | Versión |
+|---|---|
+| Angular | 20 |
+| TypeScript | 5.9 |
+| SCSS | — |
+| Karma + Jasmine | Testing |
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Requisitos
 
-```bash
-ng generate --help
-```
+- Node.js 22+
+- bun (o npm)
+- Angular CLI 20 (`npm install -g @angular/cli`)
 
-## Building
+---
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Instalación
 
 ```bash
-ng test
+git clone <repo-url>
+cd velocambio-front
+
+bun install
 ```
 
-## Running end-to-end tests
+---
 
-For end-to-end (e2e) testing, run:
+## Servidor de desarrollo
 
 ```bash
-ng e2e
+bun start -- --port 4201
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Navega a `http://localhost:4201/`. La aplicación se recarga automáticamente al modificar archivos.
 
-## Additional Resources
+> El puerto 4200 está ocupado, por eso usamos `--port 4201`.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+## Build
+
+```bash
+bun run build
+```
+
+Los artefactos de build se generan en `dist/`. El build de producción optimiza la aplicación para velocidad y rendimiento.
+
+---
+
+## Tests
+
+```bash
+bun test
+```
+
+Ejecuta tests unitarios con Karma + Jasmine.
+
+---
+
+## Backend
+
+Esta app consume la API REST de [velocambio-back](https://github.com/anomalyco/velocambio-back) en `http://localhost:9000`.
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── index.html
+├── main.ts
+├── styles.scss
+└── app/
+    ├── app.ts
+    ├── app.html
+    ├── app.scss
+    ├── app.config.ts
+    ├── app.routes.ts
+    ├── core/          # Modelos, servicios HTTP, configuración
+    ├── features/      # rates/, calculator/
+    └── shared/        # Componentes reutilizables
+```
+
+---
+
+## Diseño
+
+El diseño visual está basado en la app móvil de Velocambio (Flutter):
+- **Tema oscuro** con fondo `#181B20`
+- **Acento verde** `#10B981`
+- Cards de tasas seleccionables con bordes y glow
+- Calculadora de conversión integrada
+- Tipografía: Inter / Space Grotesk
+
+---
+
+## Licencia
+
+MIT
