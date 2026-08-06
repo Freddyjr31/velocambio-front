@@ -48,12 +48,32 @@ bun install
 ## Servidor de desarrollo
 
 ```bash
-bun start -- --port 4201
+bun start
 ```
 
 Navega a `http://localhost:4201/`. La aplicación se recarga automáticamente al modificar archivos.
 
-> El puerto 4200 está ocupado, por eso usamos `--port 4201`.
+> El puerto 4200 está ocupado, por eso el script `start` usa `--port 4201`.
+
+---
+
+## Ambientes
+
+La app usa dos configuraciones de entorno en `src/environments/`:
+
+| Archivo | Uso | API base |
+|---|---|---|
+| `environment.ts` | Desarrollo | `http://localhost:9000` |
+| `environment.prod.ts` | Producción | `https://velocambio-back.onrender.com` |
+
+El reemplazo se hace con `fileReplacements` en la configuración `production` de `angular.json`.
+
+| Comando | Ambiente | API base |
+|---|---|---|
+| `bun start` | Dev | `http://localhost:9000` |
+| `bun run start:prod` | Prod (servidor local) | `https://velocambio-back.onrender.com` |
+| `bun run build` | Prod (default) | `https://velocambio-back.onrender.com` |
+| `bun run build:dev` | Dev | `http://localhost:9000` |
 
 ---
 

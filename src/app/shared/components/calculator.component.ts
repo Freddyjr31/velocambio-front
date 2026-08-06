@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
+
+import { truncateTo2Decimals } from '../../core/utils/number.util';
 import { InvertCoinButtonComponent } from './invert-coin-button.component';
 
 @Component({
@@ -36,10 +38,12 @@ import { InvertCoinButtonComponent } from './invert-coin-button.component';
             type="text"
             inputmode="decimal"
             class="amount-input"
-            placeholder="0,000"
-            [value]="displayAmount()"
+            placeholder="0,00"
+            [value]="rawInput()"
             (beforeinput)="onBeforeInput($event)"
             (input)="onAmountChange($event)"
+            (focus)="onFocus($event)"
+            (blur)="onBlur()"
             aria-label="Monto a convertir"
           />
           @if (amountValue()) {
@@ -53,6 +57,10 @@ import { InvertCoinButtonComponent } from './invert-coin-button.component';
         </div>
       </div>
     </div>
+
+    @if (copied()) {
+      <div class="copy-toast" role="status">Monto copiado</div>
+    }
   `,
   styles: [`
     .calculator {
@@ -183,6 +191,26 @@ import { InvertCoinButtonComponent } from './invert-coin-button.component';
       background: rgba(255,255,255,0.08);
       color: var(--text-primary);
     }
+    .copy-toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      border: 1px solid var(--accent-border);
+      border-radius: 10px;
+      padding: 10px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      animation: toast-in 0.25s ease;
+    }
+    @keyframes toast-in {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
   `]
 })
 export class CalculatorComponent {
@@ -194,19 +222,21 @@ export class CalculatorComponent {
   readonly amountChanged = output<number>();
   readonly swapCurrencies = output<void>();
 
-  displayAmount(): string {
-    const val = this.amountValue();
-    return val ? val.toLocaleString('es-VE', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) : '';
-  }
+  protected readonly rawInput = signal('');
+  protected readonly copied = signal(false);
+  private copyTimer: ReturnType<typeof setTimeout> | undefined;
 
-  displayValue(): string {
+  protected displayValue(): string {
     const val = this.calculatedValue();
-    if (val === 0) return '0,000';
-    const formatted = val.toLocaleString('es-VE', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    if (val === 0) return '0,00';
+    const formatted = truncateTo2Decimals(val).toLocaleString('es-VE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
     return `${formatted} ${this.outputCoin()}`;
   }
 
-  onBeforeInput(event: Event): void {
+  protected onBeforeInput(event: Event): void {
     const inputEvent = event as InputEvent;
     if (inputEvent.inputType.startsWith('delete') || inputEvent.inputType === 'insertLineBreak') {
       return;
@@ -217,32 +247,68 @@ export class CalculatorComponent {
     if (data == null) return;
 
     const next = target.value.slice(0, target.selectionStart ?? 0) + data + target.value.slice(target.selectionEnd ?? target.value.length);
-    const digits = next.replace(/\./g, '').replace(',', '.');
-    const decimalCount = digits.replace(/[^.]/g, '').length;
+    const commaCount = next.split(',').length - 1;
 
-    if (!/^[\d.,]*$/.test(next) || decimalCount > 1) {
+    if (!/^[\d.,]*$/.test(next) || commaCount > 1) {
       event.preventDefault();
     }
   }
 
-  onAmountChange(event: Event): void {
-    const raw = (event.target as HTMLInputElement).value
-      .replace(/[^\d.,]/g, '')
-      .replace(/\./g, '')
-      .replace(',', '.');
-    const value = parseFloat(raw);
+  protected onFocus(event: FocusEvent): void {
+    (event.target as HTMLInputElement).select();
+  }
+
+  protected onBlur(): void {
+    if (!this.rawInput()) return;
+    const value = this.amountValue();
+    this.rawInput.set(
+      truncateTo2Decimals(value).toLocaleString('es-VE', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    );
+  }
+
+  protected onAmountChange(event: Event): void {
+    const cleaned = this.sanitize((event.target as HTMLInputElement).value);
+    this.rawInput.set(cleaned);
+    const value = parseFloat(cleaned.replace(',', '.'));
     this.amountChanged.emit(isNaN(value) ? 0 : value);
   }
 
-  clearAmount(): void {
+  protected clearAmount(): void {
+    this.rawInput.set('');
     this.amountChanged.emit(0);
   }
 
-  async copyToClipboard(): Promise<void> {
+  protected async copyToClipboard(): Promise<void> {
+    const text = truncateTo2Decimals(this.calculatedValue()).toLocaleString('es-VE', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
     try {
-      await navigator.clipboard.writeText(this.displayValue());
+      await navigator.clipboard.writeText(text);
+      this.showCopied();
     } catch {
       // clipboard fallback handled by browser
     }
+  }
+
+  private sanitize(raw: string): string {
+    const cleaned = raw.replace(/[^\d.,]/g, '').replace(/\./g, ',');
+    const firstComma = cleaned.indexOf(',');
+    if (firstComma === -1) return cleaned;
+    const intPart = cleaned.slice(0, firstComma);
+    const decPart = cleaned.slice(firstComma + 1).replace(/,/g, '');
+    return `${intPart},${decPart}`;
+  }
+
+  private showCopied(): void {
+    if (this.copyTimer) {
+      clearTimeout(this.copyTimer);
+    }
+    this.copied.set(true);
+    this.copyTimer = setTimeout(() => this.copied.set(false), 1800);
   }
 }

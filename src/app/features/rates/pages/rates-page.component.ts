@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CURRENCIES } from '../../../core/models/currency';
 import { ExchangeType } from '../../../core/models/exchange-type';
 import { RateService } from '../../../core/services/rate.service';
+import { truncateTo2Decimals } from '../../../core/utils/number.util';
 
 import { AdBannerComponent } from '../../../shared/components/ad-banner.component';
 import { BcvDisclaimerComponent } from '../../../shared/components/bcv-disclaimer.component';
@@ -243,7 +244,8 @@ export class RatesPageComponent {
       const amount = this.amountInput();
       const toVes = this.isDestinationVes();
 
-      this.calculatedTotal.set(toVes ? amount * rate : rate > 0 ? amount / rate : 0);
+      const total = toVes ? amount * rate : rate > 0 ? amount / rate : 0;
+      this.calculatedTotal.set(truncateTo2Decimals(total));
     });
   }
 
@@ -260,7 +262,7 @@ export class RatesPageComponent {
     subs.forEach(({ key, call }) => {
       call.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: (res) => {
-          console.log(res);
+          // console.log(res);
           this.rates.update((r) => ({ ...r, [key]: { value: res.price, loading: false } }));
         },
         error: () => {
