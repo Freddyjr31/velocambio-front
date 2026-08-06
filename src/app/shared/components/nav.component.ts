@@ -18,7 +18,15 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
         </div>
         <div class="nav-right">
           @if (showRefresh()) {
-            <button class="refresh-btn" (click)="refresh.emit()" type="button" aria-label="Actualizar tasas">
+            <button
+              class="refresh-btn"
+              [class.spinning]="refreshing()"
+              [disabled]="disabled()"
+              (click)="refresh.emit()"
+              type="button"
+              aria-label="Actualizar tasas"
+              [attr.aria-busy]="refreshing() || null"
+            >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M1 4v6h6"/>
                 <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
@@ -130,6 +138,16 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       background: rgba(255,255,255,0.08);
       color: var(--text-primary);
     }
+    .refresh-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .refresh-btn.spinning svg {
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
     .hamburger {
       display: none;
       background: none;
@@ -201,6 +219,8 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 })
 export class NavComponent {
   readonly showRefresh = input(false);
+  readonly refreshing = input(false);
+  readonly disabled = input(false);
   readonly refresh = output<void>();
   protected readonly mobileOpen = signal(false);
 

@@ -1,5 +1,6 @@
 import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { finalize } from 'rxjs';
 
 import { CURRENCIES } from '../../../core/models/currency';
 import { ExchangeType } from '../../../core/models/exchange-type';
@@ -27,6 +28,10 @@ function mockRates() {
   };
 }
 
+const REFRESH_COOLDOWN_MS = 30_000;
+const AUTO_REFRESH_INTERVAL_MS = 60_000;
+const STALENESS_MS = 300_000;
+
 @Component({
   selector: 'app-rates-page',
   imports: [
@@ -43,7 +48,12 @@ function mockRates() {
       (dismissed)="showDisclaimer.set(false)"
     />
 
-    <app-nav [showRefresh]="true" (refresh)="fetchAllRates()" />
+    <app-nav
+      [showRefresh]="true"
+      [refreshing]="refreshing()"
+      [disabled]="refreshDisabled()"
+      (refresh)="onRefresh()"
+    />
 
     <main class="page">
       <h1 class="sr-only">Velocambio — Tasas de cambio en Venezuela</h1>
@@ -56,7 +66,12 @@ function mockRates() {
 
       <div class="content-grid">
         <section class="left-col">
-          <h2 class="section-title">Tasas disponibles</h2>
+          <div class="section-header">
+            <h2 class="section-title">Tasas disponibles</h2>
+            @if (lastUpdated()) {
+              <span class="last-updated">Actualizado: {{ formattedLastUpdated() }}</span>
+            }
+          </div>
 
           <div class="rates-list">
             @for (item of rateCards; track item.type) {
@@ -133,6 +148,17 @@ function mockRates() {
       color: var(--text-primary);
       margin: 0;
     }
+    .section-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .last-updated {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.2px;
+    }
     .rates-list {
       width: 100%;
       display: flex;
@@ -182,6 +208,13 @@ export class RatesPageComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isLoading = signal(false);
+  protected readonly refreshing = signal(false);
+  protected readonly refreshDisabled = signal(false);
+  protected readonly lastUpdated = signal<Date | null>(null);
+
+  private pendingCount = 0;
+  private gotData = false;
+  private cooldownTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly rates = signal(mockRates());
 
@@ -237,7 +270,7 @@ export class RatesPageComponent {
   ];
 
   constructor() {
-    this.fetchAllRates();
+    this.refreshData();
 
     effect(() => {
       const rate = this.selectedRate();
@@ -247,10 +280,37 @@ export class RatesPageComponent {
       const total = toVes ? amount * rate : rate > 0 ? amount / rate : 0;
       this.calculatedTotal.set(truncateTo2Decimals(total));
     });
+
+    const interval = setInterval(() => this.checkAutoRefresh(), AUTO_REFRESH_INTERVAL_MS);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        this.checkAutoRefresh();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisibilityChange);
+
+    this.destroyRef.onDestroy(() => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisibilityChange);
+      if (this.cooldownTimer) {
+        clearTimeout(this.cooldownTimer);
+      }
+    });
   }
 
-  fetchAllRates(): void {
+  protected onRefresh(): void {
+    if (this.refreshDisabled()) return;
+    this.refreshData();
+  }
+
+  private refreshData(): void {
+    if (this.isLoading()) return;
+
     this.isLoading.set(true);
+    this.refreshing.set(true);
+    this.refreshDisabled.set(true);
+    this.pendingCount = 4;
+    this.gotData = false;
 
     const subs = [
       { key: 'oficial' as const, call: this.rateService.getUsdOficial() },
@@ -260,19 +320,48 @@ export class RatesPageComponent {
     ] as const;
 
     subs.forEach(({ key, call }) => {
-      call.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-        next: (res) => {
-          // console.log(res);
-          this.rates.update((r) => ({ ...r, [key]: { value: res.price, loading: false } }));
-        },
-        error: () => {
-          this.rates.update((r) => ({ ...r, [key]: { value: r[key].value, loading: false } }));
-        },
-        complete: () => {
-          this.isLoading.set(false);
-        },
-      });
+      call
+        .pipe(
+          takeUntilDestroyed(this.destroyRef),
+          finalize(() => {
+            this.pendingCount -= 1;
+            if (this.pendingCount === 0) {
+              this.isLoading.set(false);
+              this.refreshing.set(false);
+              if (this.gotData) {
+                this.lastUpdated.set(new Date());
+              }
+              this.cooldownTimer = setTimeout(
+                () => this.refreshDisabled.set(false),
+                REFRESH_COOLDOWN_MS,
+              );
+            }
+          }),
+        )
+        .subscribe({
+          next: (res) => {
+            this.gotData = true;
+            this.rates.update((r) => ({ ...r, [key]: { value: res.price, loading: false } }));
+          },
+          error: () => {
+            this.rates.update((r) => ({ ...r, [key]: { value: r[key].value, loading: false } }));
+          },
+        });
     });
+  }
+
+  private checkAutoRefresh(): void {
+    if (this.isLoading()) return;
+    const last = this.lastUpdated();
+    if (last === null || Date.now() - last.getTime() >= STALENESS_MS) {
+      this.refreshData();
+    }
+  }
+
+  protected formattedLastUpdated(): string {
+    const last = this.lastUpdated();
+    if (last === null) return '';
+    return last.toLocaleTimeString('es-VE', { hour: '2-digit', minute: '2-digit' });
   }
 
   selectRate(type: ExchangeType, rate: number | null, coinCode: string): void {
