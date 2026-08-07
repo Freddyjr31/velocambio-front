@@ -56,17 +56,17 @@ const STALENESS_MS = 300_000;
       (refresh)="onRefresh()"
     />
 
+    @defer (on viewport) {
+      <app-ad-banner position="top" />
+    } @placeholder {
+      <div style="height: 50px"></div>
+    }
+
     <main class="page">
       <h1 class="sr-only">Velocambio — Tasas de cambio en Venezuela</h1>
 
       <div class="content-grid">
         <section class="left-col">
-          @defer (on viewport) {
-            <app-ad-banner position="top" />
-          } @placeholder {
-            <div style="height: 50px"></div>
-          }
-
           <div class="section-header">
             <h2 class="section-title">Tasas disponibles</h2>
             @if (lastUpdated()) {

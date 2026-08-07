@@ -1,29 +1,31 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   OnDestroy,
   afterNextRender,
-  computed,
   input,
-  signal,
+  viewChild,
 } from '@angular/core';
 
 import { ADS_ZONES, AdZone } from '../../core/config/ads.config';
+
+interface AtOptions {
+  key: string;
+  format: 'iframe';
+  width: number;
+  height: number;
+  params: Record<string, never>;
+}
+
+type WindowWithAtOptions = Window & typeof globalThis & { atOptions?: AtOptions };
 
 @Component({
   selector: 'app-ad-banner',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="ad-banner" [class.top]="position() === 'top'">
-      <iframe
-        [srcdoc]="adHtml()"
-        [attr.width]="zone().width"
-        [attr.height]="zone().height"
-        style="border: 0; max-width: 100%"
-        scrolling="no"
-        title="Publicidad"
-        loading="lazy"
-      ></iframe>
+      <div #slot class="ad-slot"></div>
     </div>
   `,
   styles: [`
@@ -34,6 +36,11 @@ import { ADS_ZONES, AdZone } from '../../core/config/ads.config';
       min-height: 50px;
       margin: 12px auto;
       overflow: hidden;
+    }
+    .ad-slot {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       max-width: 100%;
     }
 
@@ -47,15 +54,13 @@ import { ADS_ZONES, AdZone } from '../../core/config/ads.config';
 export class AdBannerComponent implements OnDestroy {
   readonly position = input<'top' | 'bottom'>('bottom');
 
-  protected readonly zone = signal<AdZone>(ADS_ZONES.mobile);
-  protected readonly adHtml = computed(() => buildAdSrcdoc(this.zone()));
-
+  private readonly slot = viewChild.required<ElementRef<HTMLDivElement>>('slot');
   private mediaQuery: MediaQueryList | null = null;
 
   constructor() {
     afterNextRender(() => {
       this.mediaQuery = window.matchMedia(`(min-width: ${ADS_ZONES.breakpoint}px)`);
-      this.zone.set(this.mediaQuery.matches ? ADS_ZONES.desktop : ADS_ZONES.mobile);
+      this.renderZone(this.mediaQuery.matches ? ADS_ZONES.desktop : ADS_ZONES.mobile);
       this.mediaQuery.addEventListener('change', this.onMediaChange);
     });
   }
@@ -65,19 +70,35 @@ export class AdBannerComponent implements OnDestroy {
   }
 
   private readonly onMediaChange = (event: MediaQueryListEvent): void => {
-    this.zone.set(event.matches ? ADS_ZONES.desktop : ADS_ZONES.mobile);
+    this.renderZone(event.matches ? ADS_ZONES.desktop : ADS_ZONES.mobile);
   };
-}
 
-function buildAdSrcdoc(zone: AdZone): string {
-  return [
-    '<!DOCTYPE html>',
-    '<html><head>',
-    '<meta charset="utf-8">',
-    '<style>html,body{margin:0;padding:0;overflow:hidden}body{display:flex;align-items:center;justify-content:center}</style>',
-    '</head><body>',
-    `<script>atOptions={key:${JSON.stringify(zone.key)},format:'iframe',width:${zone.width},height:${zone.height},params:{}};<\/script>`,
-    `<script src="https://www.highperformanceformat.com/${zone.key}/invoke.js" type="text/javascript"><\/script>`,
-    '</body></html>',
-  ].join('');
+  private renderZone(zone: AdZone): void {
+    const container = this.slot().nativeElement;
+    if (!container) return;
+
+    container.replaceChildren();
+    container.appendChild(this.buildAtOptionsScript(zone));
+    container.appendChild(this.buildInvokeScript(zone.key));
+  }
+
+  private buildAtOptionsScript(zone: AdZone): HTMLScriptElement {
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.textContent = `atOptions = ${JSON.stringify({
+      key: zone.key,
+      format: 'iframe',
+      width: zone.width,
+      height: zone.height,
+      params: {},
+    } as AtOptions)};`;
+    return script;
+  }
+
+  private buildInvokeScript(key: string): HTMLScriptElement {
+    const script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = `https://www.highperformanceformat.com/${key}/invoke.js`;
+    return script;
+  }
 }
