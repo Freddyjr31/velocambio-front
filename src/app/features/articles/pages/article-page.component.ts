@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { SeoService } from '../../../core/services/seo.service';
@@ -244,11 +245,17 @@ export class ArticlePageComponent {
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly destroyRef = inject(DestroyRef);
   private readonly articleService = inject(ArticleService);
   private readonly seo = inject(SeoService);
 
   constructor() {
-    const slug = this.route.snapshot.paramMap.get('slug');
+    this.route.paramMap
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((params) => this.loadArticle(params.get('slug')));
+  }
+
+  private loadArticle(slug: string | null): void {
     const article = slug ? this.articleService.getBySlug(slug) : null;
 
     if (!article) {
