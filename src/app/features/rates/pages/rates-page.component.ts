@@ -61,6 +61,12 @@ const STALENESS_MS = 300_000;
 
       <div class="content-grid">
         <section class="left-col">
+          @defer (on viewport) {
+            <app-ad-banner position="top" />
+          } @placeholder {
+            <div style="height: 50px"></div>
+          }
+
           <div class="section-header">
             <h2 class="section-title">Tasas disponibles</h2>
             @if (lastUpdated()) {

@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
 import { SeoService } from '../../../core/services/seo.service';
+import { AdBannerComponent } from '../../../shared/components/ad-banner.component';
 import { NavComponent } from '../../../shared/components/nav.component';
 import { FooterComponent } from '../../../shared/components/footer.component';
 
 @Component({
   selector: 'app-terms-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NavComponent, FooterComponent],
+  imports: [NavComponent, FooterComponent, AdBannerComponent],
   template: `
     <div class="page">
       <app-nav />
@@ -19,6 +20,12 @@ import { FooterComponent } from '../../../shared/components/footer.component';
           <div class="logo-text">Velocambio</div>
           <p class="subtitle">Conversor de divisas para Venezuela</p>
         </header>
+
+        @defer (on viewport) {
+          <app-ad-banner position="top" />
+        } @placeholder {
+          <div style="height: 50px"></div>
+        }
 
         <h1>Términos y Condiciones</h1>
         <p><strong>Fecha de vigencia:</strong> 30 de julio de 2026</p>

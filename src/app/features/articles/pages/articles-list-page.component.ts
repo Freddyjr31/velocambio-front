@@ -15,6 +15,12 @@ import { ArticleService } from '../services/article.service';
     <app-nav />
 
     <main class="page">
+      @defer (on viewport) {
+        <app-ad-banner position="top" />
+      } @placeholder {
+        <div style="height: 50px"></div>
+      }
+
       <header class="page-header">
         <p class="eyebrow">Blog y guías</p>
         <h1>Tasas de cambio en Venezuela</h1>

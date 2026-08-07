@@ -25,6 +25,12 @@ import { ArticleService } from '../services/article.service';
       <app-nav />
 
       <main class="page">
+        @defer (on viewport) {
+          <app-ad-banner position="top" />
+        } @placeholder {
+          <div style="height: 50px"></div>
+        }
+
         <article class="article">
           <header class="article-header">
             <a class="back-link" routerLink="/blog">← Volver al blog</a>
