@@ -21,6 +21,20 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'blog',
+    loadComponent: () =>
+      import('./features/articles/pages/articles-list-page.component').then(
+        (m) => m.ArticlesListPageComponent,
+      ),
+  },
+  {
+    path: 'blog/:slug',
+    loadComponent: () =>
+      import('./features/articles/pages/article-page.component').then(
+        (m) => m.ArticlePageComponent,
+      ),
+  },
+  {
     path: 'terms',
     loadComponent: () =>
       import('./features/terms/pages/terms-page.component').then(

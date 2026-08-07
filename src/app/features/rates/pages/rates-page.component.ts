@@ -59,12 +59,6 @@ const STALENESS_MS = 300_000;
     <main class="page">
       <h1 class="sr-only">Velocambio — Tasas de cambio en Venezuela</h1>
 
-      @defer (on idle) {
-        <app-ad-banner position="top" />
-      } @placeholder {
-        <div style="height: 68px"></div>
-      }
-
       <div class="content-grid">
         <section class="left-col">
           <div class="section-header">

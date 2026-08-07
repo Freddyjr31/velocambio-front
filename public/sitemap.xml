@@ -11,6 +11,36 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://velocambio.vercel.app/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://velocambio.vercel.app/blog/dolar-hoy-venezuela</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velocambio.vercel.app/blog/dolar-bcv-oficial</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velocambio.vercel.app/blog/dolar-paralelo-vs-oficial</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velocambio.vercel.app/blog/euro-hoy-venezuela</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://velocambio.vercel.app/blog/usdt-p2p-venezuela</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://velocambio.vercel.app/privacy-policy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>

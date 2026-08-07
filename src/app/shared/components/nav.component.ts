@@ -12,6 +12,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           <img src="/assets/images/app_icon-removebg_small.PNG" alt="Velocambio" class="logo" />
           <div class="desktop-links">
             <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">Calculadora</a>
+            <a routerLink="/blog" routerLinkActive="active" class="nav-link">Blog</a>
             <a routerLink="/privacy-policy" routerLinkActive="active" class="nav-link">Privacidad</a>
             <a routerLink="/terms" routerLinkActive="active" class="nav-link">Términos</a>
           </div>
@@ -55,6 +56,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
             class="mobile-link"
             (click)="mobileOpen.set(false)"
           >Calculadora</a>
+          <a
+            routerLink="/blog"
+            routerLinkActive="active"
+            class="mobile-link"
+            (click)="mobileOpen.set(false)"
+          >Blog</a>
           <a
             routerLink="/privacy-policy"
             routerLinkActive="active"

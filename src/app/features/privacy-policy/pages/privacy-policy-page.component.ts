@@ -25,7 +25,7 @@ import { FooterComponent } from '../../../shared/components/footer.component';
         <p><strong>Última actualización:</strong> 30 de julio de 2026</p>
 
         <div class="highlight">
-          <strong>Resumen:</strong> Velocambio es una aplicación con fines exclusivamente informativos. No representamos ni estamos afiliados a ninguna institución gubernamental, autoridad monetaria ni financiera. No recopilamos datos personales. La aplicación solo muestra información pública sobre tasas de cambio. Los únicos datos que pueden recopilarse provienen de Google AdMob (anuncios) y están sujetos a la política de privacidad de Google.
+          <strong>Resumen:</strong> Velocambio es una aplicación con fines exclusivamente informativos. No representamos ni estamos afiliados a ninguna institución gubernamental, autoridad monetaria ni financiera. No recopilamos datos personales. La aplicación solo muestra información pública sobre tasas de cambio. Los únicos datos que pueden recopilarse provienen de Adsterra (anuncios) y están sujetos a la política de privacidad de Adsterra.
         </div>
 
         <section>
@@ -105,8 +105,8 @@ import { FooterComponent } from '../../../shared/components/footer.component';
             <li>No se recopila información financiera, como números de cuentas, tarjetas o billeteras digitales</li>
           </ul>
 
-          <h3>3.2 Datos que Google AdMob puede recopilar</h3>
-          <p>Esta aplicación utiliza <strong>Google AdMob</strong> para mostrar anuncios. A través de AdMob, Google puede recopilar automáticamente:</p>
+          <h3>3.2 Datos que Adsterra puede recopilar</h3>
+          <p>Esta aplicación utiliza <strong>Adsterra</strong> para mostrar anuncios. A través de Adsterra, el proveedor puede recopilar automáticamente:</p>
           <table>
             <thead>
               <tr>
@@ -116,28 +116,24 @@ import { FooterComponent } from '../../../shared/components/footer.component';
             </thead>
             <tbody>
               <tr>
-                <td>ID de publicidad del dispositivo</td>
+                <td>Identificador pseudónimo único (UID)</td>
                 <td>Mostrar anuncios relevantes, medir rendimiento</td>
               </tr>
               <tr>
-                <td>Dirección IP</td>
+                <td>Dirección IP y datos del dispositivo/navegador (user agent)</td>
                 <td>Detección de fraude, geolocalización aproximada</td>
               </tr>
               <tr>
-                <td>Interacciones con anuncios</td>
+                <td>Interacciones con anuncios (impresiones, clics)</td>
                 <td>Medir efectividad de campañas publicitarias</td>
               </tr>
               <tr>
-                <td>Datos del dispositivo (modelo, SO, versión)</td>
-                <td>Optimización de anuncios, detección de errores</td>
-              </tr>
-              <tr>
-                <td>Datos de aplicación instalada</td>
-                <td>Medir conversiones de anuncios</td>
+                <td>Cookies de publicidad</td>
+                <td>Segmentación y medición de anuncios</td>
               </tr>
             </tbody>
           </table>
-          <p>Para más información sobre cómo Google recopila y utiliza estos datos, consulta la <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidad de Google</a>.</p>
+          <p>Para más información sobre cómo Adsterra recopila y utiliza estos datos, consulta la <a href="https://adsterra.com/privacy-policy-managed/" target="_blank" rel="noopener">Política de Privacidad de Adsterra</a>.</p>
         </section>
 
         <section>
@@ -164,7 +160,7 @@ import { FooterComponent } from '../../../shared/components/footer.component';
 
         <section>
           <h2>5. Uso de la información</h2>
-          <p>La información recopilada a través de Google AdMob se utiliza exclusivamente para:</p>
+          <p>La información recopilada a través de Adsterra se utiliza exclusivamente para:</p>
           <ul>
             <li><strong>Mostrar anuncios:</strong> Presentar anuncios relevantes al usuario dentro de la aplicación.</li>
             <li><strong>Medir rendimiento:</strong> Analizar la efectividad de los anuncios mostrados.</li>
@@ -177,7 +173,7 @@ import { FooterComponent } from '../../../shared/components/footer.component';
           <h2>6. Compartición de datos con terceros</h2>
           <p>Velocambio <strong>no vende, alquila ni comparte</strong> datos personales con terceros, con las siguientes excepciones:</p>
           <ul>
-            <li><strong>Google AdMob:</strong> Los datos de uso y dispositivos se comparten con Google según su <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Política de Privacidad</a>.</li>
+            <li><strong>Adsterra:</strong> Los datos de uso y dispositivos se comparten con Adsterra según su <a href="https://adsterra.com/privacy-policy-managed/" target="_blank" rel="noopener">Política de Privacidad</a>.</li>
             <li><strong>Requisitos legales:</strong> Podríamos divulgar datos si lo requiere la ley, una orden judicial o una solicitud gubernamental válida.</li>
           </ul>
         </section>
@@ -209,21 +205,12 @@ import { FooterComponent } from '../../../shared/components/footer.component';
 
         <section>
           <h2>10. Publicidad</h2>
-          <p>Velocambio se ofrece de forma gratuita y puede mostrar anuncios gestionados por plataformas externas, como Google AdMob. Estos anuncios pueden emplear identificadores técnicos del dispositivo con fines estadísticos y de segmentación. La aplicación no accede ni almacena directamente la información utilizada por dichas plataformas. Toda la publicidad cumple con las políticas de Google y con la normativa aplicable en materia de privacidad.</p>
+          <p>Velocambio se ofrece de forma gratuita y puede mostrar anuncios gestionados por plataformas externas, como Adsterra. Estos anuncios pueden emplear identificadores técnicos del dispositivo, cookies y datos de navegación con fines estadísticos y de segmentación. La aplicación no accede ni almacena directamente la información utilizada por dichas plataformas. Toda la publicidad cumple con las políticas de Adsterra y con la normativa aplicable en materia de privacidad.</p>
         </section>
 
         <section>
           <h2>11. Cambios en esta política</h2>
           <p>Nos reservamos el derecho de actualizar esta política de privacidad en cualquier momento. Los cambios se publicarán en esta página con una nueva fecha de vigencia. Se recomienda revisar periódicamente esta política. Los cambios significativos se comunicarán a través de la aplicación.</p>
-        </section>
-
-        <section>
-          <h2>12. Contacto</h2>
-          <div class="card">
-            <p>Si tienes preguntas, inquietudes o solicitudes sobre esta política de privacidad, puedes contactarnos:</p>
-            <p><strong>Email:</strong> <a href="mailto:freddyjr31@gmail.com">freddyjr31@gmail.com</a></p>
-            <p><strong>GitHub:</strong> <a href="https://github.com/Freddyjr31/veloCambio" target="_blank" rel="noopener">github.com/Freddyjr31/veloCambio</a></p>
-          </div>
         </section>
 
         <app-footer />

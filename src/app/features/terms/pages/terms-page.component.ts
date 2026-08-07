@@ -100,7 +100,7 @@ import { FooterComponent } from '../../../shared/components/footer.component';
 
         <section>
           <h2>9. Enlaces a terceros</h2>
-          <p>Velocambio puede contener enlaces a sitios web de terceros (fuentes de datos, Google AdMob, etc.). No tenemos control sobre el contenido, políticas de privacidad o prácticas de estos sitios. El acceso a sitios externos se realiza bajo la exclusiva decisión y responsabilidad del usuario.</p>
+          <p>Velocambio puede contener enlaces a sitios web de terceros (fuentes de datos, plataformas publicitarias, etc.). No tenemos control sobre el contenido, políticas de privacidad o prácticas de estos sitios. El acceso a sitios externos se realiza bajo la exclusiva decisión y responsabilidad del usuario.</p>
         </section>
 
         <section>
@@ -111,15 +111,6 @@ import { FooterComponent } from '../../../shared/components/footer.component';
         <section>
           <h2>11. Ley aplicable</h2>
           <p>Estos términos se rigen por las leyes de la República Bolivariana de Venezuela. Cualquier disputa relacionada con estos términos será sometida a la jurisdicción de los tribunales competentes de Venezuela.</p>
-        </section>
-
-        <section>
-          <h2>12. Contacto</h2>
-          <div class="card">
-            <p>Si tienes preguntas sobre estos términos y condiciones, puedes contactarnos:</p>
-            <p><strong>Email:</strong> <a href="mailto:freddyjr31@gmail.com">freddyjr31@gmail.com</a></p>
-            <p><strong>GitHub:</strong> <a href="https://github.com/Freddyjr31/veloCambio" target="_blank" rel="noopener">github.com/Freddyjr31/veloCambio</a></p>
-          </div>
         </section>
 
         <app-footer />

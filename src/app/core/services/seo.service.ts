@@ -23,4 +23,30 @@ export class SeoService {
       link.href = canonicalUrl;
     }
   }
+
+  setArticleSchema(article: {
+    slug: string;
+    title: string;
+    description: string;
+    datePublished: string;
+    dateModified: string;
+  }): void {
+    const existing = document.getElementById('article-jsonld');
+    existing?.remove();
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'article-jsonld';
+    script.textContent = JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: article.title,
+      description: article.description,
+      url: `${environment.siteUrl}/blog/${article.slug}`,
+      datePublished: article.datePublished,
+      dateModified: article.dateModified,
+      inLanguage: 'es',
+    });
+    document.head.appendChild(script);
+  }
 }
