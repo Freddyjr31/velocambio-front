@@ -24,6 +24,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "security.txt",
+                "input": "public/.well-known",
+                "output": "/.well-known"
               }
             ],
             "styles": [
