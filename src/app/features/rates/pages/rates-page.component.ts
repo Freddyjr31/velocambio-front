@@ -1,5 +1,7 @@
-import { Component, DestroyRef, effect, inject, signal } from '@angular/core';
+import { isPlatformServer } from '@angular/common';
+import { Component, DestroyRef, effect, inject, PLATFORM_ID, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { CURRENCIES } from '../../../core/models/currency';
@@ -42,6 +44,7 @@ const STALENESS_MS = 300_000;
     CalculatorComponent,
     BcvDisclaimerComponent,
     FooterComponent,
+    RouterLink,
   ],
   template: `
     <app-bcv-disclaimer
@@ -63,7 +66,13 @@ const STALENESS_MS = 300_000;
     }
 
     <main class="page">
-      <h1 class="sr-only">Velocambio — Tasas de cambio en Venezuela</h1>
+      <div class="page-hero">
+        <h1 class="page-title">Dólar hoy en Venezuela</h1>
+        <p class="page-subtitle">
+          Consulta la tasa del dólar BCV oficial, el dólar paralelo, el euro y el USDT P2P en
+          bolívares (VES) al día de hoy, y convierte divisas al instante con el conversor.
+        </p>
+      </div>
 
       <div class="content-grid">
         <section class="left-col">
@@ -119,32 +128,45 @@ const STALENESS_MS = 300_000;
       <section class="seo-content">
         <h2>Dólar hoy en Venezuela: tasas de cambio en tiempo real</h2>
         <p>
-          Velocambio te muestra en tiempo real el precio del dólar en Venezuela, la tasa
-          oficial del BCV, el dólar paralelo (promedio del mercado), el euro y el USDT P2P,
+          Velocambio te muestra en tiempo real el precio del dólar hoy en Venezuela: la tasa
+          oficial del BCV, el dólar paralelo o promedio del mercado, el euro y el USDT P2P,
           todos convertidos a bolívares (VES). También puedes usar el conversor para calcular
-          cuántos bolívares equivalen a dólares, euros o USDT al instante.
+          cuántos bolívares equivalen a dólares, euros o USDT al instante, sin necesidad de
+          instalar ninguna aplicación.
         </p>
         <h3>Dólar oficial (BCV)</h3>
         <p>
-          El tipo de cambio oficial del Banco Central de Venezuela es la referencia para
-          transacciones legales en el país. Consulta aquí el valor del dólar BCV hoy,
-          actualizado automáticamente cuando el BCV publica una nueva tasa.
+          El tipo de cambio oficial del <a routerLink="/blog/dolar-bcv-oficial">dólar BCV</a> es
+          la referencia para transacciones legales en el país. Consulta aquí el valor del dólar
+          BCV hoy, actualizado automáticamente cuando el Banco Central de Venezuela publica una
+          nueva tasa.
         </p>
         <h3>Dólar paralelo (promedio)</h3>
         <p>
-          El dólar paralelo o promedio refleja la cotización de referencia del mercado no
-          oficial en Venezuela, calculada como promedio de distintas plataformas de
-          intercambio.
+          El <a routerLink="/blog/dolar-paralelo-vs-oficial">dólar paralelo</a> o promedio
+          refleja la cotización de referencia del mercado no oficial en Venezuela, calculada
+          como promedio de distintas plataformas de intercambio. Conoce las diferencias entre
+          ambas tasas y para qué se usa cada una en nuestro blog.
         </p>
         <h3>Euro oficial</h3>
         <p>
-          Consulta cuánto está el euro hoy en bolívares (EUR/VES) según las fuentes públicas
-          de referencia del mercado venezolano.
+          Consulta <a routerLink="/blog/euro-hoy-venezuela">cuánto está el euro hoy en
+          bolívares</a> (EUR/VES) según las fuentes públicas de referencia del mercado
+          venezolano, y convierte euros a bolívares con la calculadora de Velocambio.
         </p>
         <h3>USDT P2P (Binance)</h3>
         <p>
           El USDT es una criptomoneda estable respaldada por el dólar. Velocambio muestra el
-          precio promedio del USDT/VES según los anuncios activos del mercado P2P de Binance.
+          precio promedio del USDT/VES según los anuncios activos del
+          <a routerLink="/blog/usdt-p2p-venezuela">mercado P2P de Binance</a>, una de las
+          formas más usadas de guardar valor en Venezuela.
+        </p>
+        <h3>Aprende más en el blog</h3>
+        <p>
+          En el <a routerLink="/blog">blog de tasas de cambio de Velocambio</a> encontrarás
+          guías sobre el dólar en Venezuela: cómo funciona la tasa del BCV, por qué el dólar
+          paralelo suele estar por encima del oficial y cómo convertir USDT a bolívares de
+          forma segura.
         </p>
       </section>
     </main>
@@ -229,13 +251,37 @@ const STALENESS_MS = 300_000;
       color: var(--text-muted);
       margin: 0 0 8px;
     }
+    .seo-content a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .seo-content a:hover {
+      text-decoration: underline;
+    }
 
     @media (min-width: 768px) {
       .page {
         padding: 16px 24px 32px;
         gap: 16px;
       }
-      .content-grid {
+    .page-hero {
+      text-align: center;
+      padding: 4px 6px 0;
+    }
+    .page-title {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0 0 6px;
+    }
+    .page-subtitle {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto;
+    }
+    .content-grid {
         flex-direction: row;
         gap: 24px;
         align-items: flex-start;
@@ -256,6 +302,9 @@ const STALENESS_MS = 300_000;
       .divider-mobile {
         display: none;
       }
+      .page-title {
+        font-size: 1.7rem;
+      }
     }
   `]
 })
@@ -266,6 +315,7 @@ export class RatesPageComponent {
   private readonly rateService = inject(RateService);
   private readonly seo = inject(SeoService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly isLoading = signal(false);
   protected readonly refreshing = signal(false);
@@ -331,13 +381,11 @@ export class RatesPageComponent {
 
   constructor() {
     this.seo.setPageMeta({
-      title: 'Velocambio — Dólar hoy en Venezuela: BCV, paralelo, euro y USDT',
+      title: 'Dólar hoy en Venezuela: BCV, paralelo, euro y USDT',
       description:
         'Consulta la tasa del dólar hoy en Venezuela: dólar BCV oficial, dólar paralelo, euro y USDT P2P en bolívares (VES). Conversor de divisas en tiempo real.',
       canonicalPath: '/',
     });
-
-    this.refreshData();
 
     effect(() => {
       const rate = this.selectedRate();
@@ -348,21 +396,25 @@ export class RatesPageComponent {
       this.calculatedTotal.set(truncateTo2Decimals(total));
     });
 
-    const interval = setInterval(() => this.checkAutoRefresh(), AUTO_REFRESH_INTERVAL_MS);
-    const onVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        this.checkAutoRefresh();
-      }
-    };
-    document.addEventListener('visibilitychange', onVisibilityChange);
+    if (!isPlatformServer(this.platformId)) {
+      this.refreshData();
 
-    this.destroyRef.onDestroy(() => {
-      clearInterval(interval);
-      document.removeEventListener('visibilitychange', onVisibilityChange);
-      if (this.cooldownTimer) {
-        clearTimeout(this.cooldownTimer);
-      }
-    });
+      const interval = setInterval(() => this.checkAutoRefresh(), AUTO_REFRESH_INTERVAL_MS);
+      const onVisibilityChange = () => {
+        if (document.visibilityState === 'visible') {
+          this.checkAutoRefresh();
+        }
+      };
+      document.addEventListener('visibilitychange', onVisibilityChange);
+
+      this.destroyRef.onDestroy(() => {
+        clearInterval(interval);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
+        if (this.cooldownTimer) {
+          clearTimeout(this.cooldownTimer);
+        }
+      });
+    }
   }
 
   protected onRefresh(): void {

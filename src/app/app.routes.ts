@@ -8,10 +8,8 @@ export const routes: Routes = [
   },
   {
     path: 'calculator',
-    loadComponent: () =>
-      import('./features/calculator/components/calculator-page.component').then(
-        (m) => m.CalculatorPageComponent,
-      ),
+    redirectTo: '',
+    pathMatch: 'full',
   },
   {
     path: 'privacy-policy',

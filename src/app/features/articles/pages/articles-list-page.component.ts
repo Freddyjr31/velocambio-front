@@ -172,7 +172,7 @@ export class ArticlesListPageComponent {
 
   constructor() {
     this.seo.setPageMeta({
-      title: 'Blog y guías sobre tasas de cambio en Venezuela — Velocambio',
+      title: 'Blog de tasas de cambio en Venezuela — Velocambio',
       description:
         'Guías sobre el dólar en Venezuela: tasa BCV, dólar paralelo, euro y USDT P2P. Aprende cómo funcionan las tasas de cambio y conviértelas a bolívares.',
       canonicalPath: '/blog',

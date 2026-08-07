@@ -27,36 +27,40 @@ Obtiene cotizaciones en tiempo real desde el backend ([velocambio-back](https://
 
 ```
 velocambio-front/
-├── public/                    # Activos estáticos
+├── public/                    # Activos estáticos (sitemap.xml, robots.txt, ads.txt)
 ├── src/
-│   ├── index.html             # Entry point HTML
-│   ├── main.ts                # bootstrapApplication
+│   ├── index.html             # Entry point HTML (JSON-LD estático inline)
+│   ├── main.ts                # bootstrapApplication (cliente)
+│   ├── main.server.ts         # bootstrap SSR/SSG
+│   ├── server.ts              # Dev SSR (Express)
 │   ├── styles.scss            # Estilos globales
 │   └── app/
 │       ├── app.ts             # Componente raíz
 │       ├── app.html           # Template raíz
 │       ├── app.scss           # Estilos raíz
-│       ├── app.config.ts      # Configuración de providers
+│       ├── app.config.ts      # Configuración de providers (cliente)
+│       ├── app.config.server.ts  # Providers del servidor (SSR/SSG)
 │       ├── app.routes.ts      # Definición de rutas
+│       ├── app.routes.server.ts  # Rutas a prerender (SSG)
 │       ├── app.spec.ts        # Test del componente raíz
 │       ├── core/              # Capa core (singletons, servicios globales)
 │       │   ├── models/        # Interfaces y tipos
-│       │   ├── services/      # Servicios HTTP y lógica de negocio
+│       │   ├── services/      # HTTP + SeoService
 │       │   ├── http/          # Cliente HTTP base, interceptors
-│       │   └── config/        # Constantes, environment
+│       │   └── config/        # Constantes, environment, ADS_ZONES
 │       ├── features/          # Módulos por funcionalidad
-│       │   ├── rates/         # Tasas de cambio (lista, detalle)
+│       │   ├── rates/         # Home: tasas + calculadora + contenido SEO
 │       │   │   ├── pages/     # Páginas completas
 │       │   │   ├── components/# Componentes de la feature
 │       │   │   └── services/  # Servicios específicos
-│       │   └── calculator/    # Calculadora de conversión
-│       │       ├── components/
-│       │       └── services/
+│       │   ├── articles/      # Blog (lista y artículo)
+│       │   ├── terms/         # Términos y condiciones
+│       │   └── privacy-policy # Política de privacidad
 │       └── shared/            # Componentes reutilizables
-│           ├── components/    # Cards, botones, inputs
+│           ├── components/    # Cards, nav, footer, ad-banner, bcv-disclaimer
 │           ├── pipes/         # Pipes personalizados
 │           └── directives/    # Directivas personalizadas
-├── angular.json
+├── angular.json               # outputMode: "static" (SSG)
 ├── package.json
 ├── tsconfig.json
 ├── tsconfig.app.json
@@ -239,7 +243,7 @@ bun start -- --port 4201
 # o
 ng serve --port 4201
 
-# Build producción
+# Build producción (SSG): genera HTML prerendered en dist/velocambio-front/browser/
 ng build
 
 # Tests unitarios
@@ -265,3 +269,6 @@ ng generate service core/services/rate
 7. **Preferir** `input()` y `output()` sobre `@Input()`/`@Output()` decorators
 8. **Siempre** correr `ng test` antes de commits
 9. **La app es zoneless** — no inyectar `NgZone` ni usar `NgZone.run()`
+10. **Prerender-safe** — al tocar APIs del navegador (`document`, `window`, `localStorage`), protegerlas con `isPlatformServer` o `afterNextRender`: el prerender corre en Node. Inyectar `DOCUMENT` de `@angular/common` en vez de `document` global
+11. **Al añadir rutas/páginas** — registrarlas en `app.routes.server.ts` (`RenderMode.Prerender`) para que se genere su HTML estático y agregar la URL a `public/sitemap.xml`
+12. **SEO on-page** — cada página debe mantener `<title>` ≤60 caracteres, un solo H1 visible y contenido real (el prerender NO incluye datos en vivo de tasas)

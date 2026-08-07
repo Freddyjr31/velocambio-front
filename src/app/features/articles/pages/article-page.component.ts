@@ -273,7 +273,7 @@ export class ArticlePageComponent {
     this.related.set(this.articleService.getRelated(article));
 
     this.seo.setPageMeta({
-      title: `${article.title} — Velocambio`,
+      title: article.title,
       description: article.description,
       canonicalPath: `/blog/${article.slug}`,
     });

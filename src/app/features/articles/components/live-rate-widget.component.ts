@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, computed, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, OnInit, PLATFORM_ID, computed, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { isPlatformServer } from '@angular/common';
 import { Observable } from 'rxjs';
 
 import { RateService } from '../../../core/services/rate.service';
@@ -60,6 +61,7 @@ export class LiveRateWidgetComponent implements OnInit {
 
   private readonly rateService = inject(RateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly platformId = inject(PLATFORM_ID);
 
   protected readonly rate = signal<number | null>(null);
   protected readonly loading = signal(true);
@@ -74,6 +76,11 @@ export class LiveRateWidgetComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    if (isPlatformServer(this.platformId)) {
+      this.loading.set(false);
+      return;
+    }
+
     this.requestFor(this.type())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({

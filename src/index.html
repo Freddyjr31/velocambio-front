@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <title>Velocambio — Tasas de cambio en Venezuela</title>
+  <title>Dólar hoy en Venezuela: BCV, paralelo, euro y USDT</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#181B20">
@@ -47,7 +47,35 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <script src="/json-ld.js" defer></script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://velocambio.vercel.app/#website",
+          "url": "https://velocambio.vercel.app/",
+          "name": "Velocambio",
+          "description": "Tasas de cambio en tiempo real: dólar BCV oficial, dólar paralelo, euro y USDT P2P a bolívares (VES) en Venezuela.",
+          "inLanguage": "es"
+        },
+        {
+          "@type": "WebApplication",
+          "@id": "https://velocambio.vercel.app/#webapp",
+          "name": "Velocambio",
+          "description": "Consulta tasas de cambio y convierte divisas a Bolívares (VES) en Venezuela.",
+          "url": "https://velocambio.vercel.app/",
+          "applicationCategory": "FinanceApplication",
+          "operatingSystem": "All",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          }
+        }
+      ]
+    }
+  </script>
   <!-- AdSense desactivado (placeholder anterior). Para reactivar, quita el comentario:
   <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1848827838251342" crossorigin="anonymous" async></script>
   -->

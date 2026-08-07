@@ -87,6 +87,25 @@ Los artefactos de build se generan en `dist/`. El build de producción optimiza 
 
 ---
 
+## SEO y prerendering (SSG)
+
+El sitio se despliega como **sitio estático prerendered** (SSG) con `@angular/ssr`:
+
+- `angular.json` usa `"outputMode": "static"`: `ng build` genera HTML estático real para cada ruta en `dist/velocambio-front/browser/`, sin servidor Node.
+- Las rutas prerendered se definen en `src/app/app.routes.server.ts` (`RenderMode.Prerender`). Las rutas dinámicas `/blog/:slug` usan `getPrerenderParams` desde `ARTICLES`.
+- Cada página prerendered incluye su `<title>` (≤60 caracteres), meta description y canonical correctos, porque `SeoService` corre durante el prerender.
+- El JSON-LD (WebSite + WebApplication) es un `<script type="application/ld+json">` estático en `index.html`; los artículos añaden su schema `Article` vía `SeoService`.
+- Los datos en vivo (tasas) **no** van en el HTML estático: se cargan por JS al hidratar la página. El fetch de tasas y los banners están desactivados durante el prerender (`isPlatformServer`).
+- Vercel sirve `dist/velocambio-front/browser`; las rutas no prerendered (y el redirect de `/calculator`) caen al rewrite de `index.html` (CSR).
+
+### Al agregar rutas o artículos nuevos
+
+1. Añade la ruta en `app.routes.ts`.
+2. Añádela a `serverRoutes` en `app.routes.server.ts` (con `getPrerenderParams` si tiene parámetros) para que se genere su HTML estático.
+3. Agrega la URL a `public/sitemap.xml`.
+
+---
+
 ## Tests
 
 ```bash
@@ -109,15 +128,19 @@ Esta app consume la API REST de [velocambio-back](https://github.com/anomalyco/v
 src/
 ├── index.html
 ├── main.ts
+├── main.server.ts          # Bootstrap SSR/SSG
+├── server.ts               # Dev SSR (Express)
 ├── styles.scss
 └── app/
     ├── app.ts
     ├── app.html
     ├── app.scss
     ├── app.config.ts
+    ├── app.config.server.ts # Providers del servidor
     ├── app.routes.ts
+    ├── app.routes.server.ts # Rutas a prerender (SSG)
     ├── core/          # Modelos, servicios HTTP, configuración
-    ├── features/      # rates/, calculator/
+    ├── features/      # rates/, articles/, terms/, privacy-policy/
     └── shared/        # Componentes reutilizables
 ```
 

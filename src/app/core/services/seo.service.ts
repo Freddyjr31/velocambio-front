@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 
@@ -7,6 +8,7 @@ import { environment } from '../../../environments/environment';
 export class SeoService {
   private readonly title = inject(Title);
   private readonly meta = inject(Meta);
+  private readonly document = inject(DOCUMENT);
 
   setPageMeta(options: { title: string; description: string; canonicalPath?: string }): void {
     const canonicalPath = options.canonicalPath ?? '/';
@@ -18,7 +20,7 @@ export class SeoService {
     this.meta.updateTag({ property: 'og:description', content: options.description });
     this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
 
-    const link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const link = this.document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
     if (link) {
       link.href = canonicalUrl;
     }
@@ -31,10 +33,10 @@ export class SeoService {
     datePublished: string;
     dateModified: string;
   }): void {
-    const existing = document.getElementById('article-jsonld');
+    const existing = this.document.getElementById('article-jsonld');
     existing?.remove();
 
-    const script = document.createElement('script');
+    const script = this.document.createElement('script');
     script.type = 'application/ld+json';
     script.id = 'article-jsonld';
     script.textContent = JSON.stringify({
@@ -47,6 +49,6 @@ export class SeoService {
       dateModified: article.dateModified,
       inLanguage: 'es',
     });
-    document.head.appendChild(script);
+    this.document.head.appendChild(script);
   }
 }
