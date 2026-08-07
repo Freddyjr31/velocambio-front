@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
+import { SeoService } from '../../../core/services/seo.service';
 import { NavComponent } from '../../../shared/components/nav.component';
 import { FooterComponent } from '../../../shared/components/footer.component';
 
@@ -236,4 +237,15 @@ import { FooterComponent } from '../../../shared/components/footer.component';
     }
   `]
 })
-export class TermsPageComponent {}
+export class TermsPageComponent {
+  private readonly seo = inject(SeoService);
+
+  constructor() {
+    this.seo.setPageMeta({
+      title: 'Términos y Condiciones — Velocambio',
+      description:
+        'Términos y condiciones de uso de Velocambio: carácter informativo de las tasas, fuentes de datos y limitación de responsabilidad.',
+      canonicalPath: '/terms',
+    });
+  }
+}

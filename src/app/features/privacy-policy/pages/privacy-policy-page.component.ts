@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
+import { SeoService } from '../../../core/services/seo.service';
 import { NavComponent } from '../../../shared/components/nav.component';
 import { FooterComponent } from '../../../shared/components/footer.component';
 
@@ -368,4 +369,15 @@ import { FooterComponent } from '../../../shared/components/footer.component';
     }
   `]
 })
-export class PrivacyPolicyPageComponent {}
+export class PrivacyPolicyPageComponent {
+  private readonly seo = inject(SeoService);
+
+  constructor() {
+    this.seo.setPageMeta({
+      title: 'Política de Privacidad — Velocambio',
+      description:
+        'Política de privacidad de Velocambio: datos recopilados, uso de anuncios de Google y derechos del usuario.',
+      canonicalPath: '/privacy-policy',
+    });
+  }
+}

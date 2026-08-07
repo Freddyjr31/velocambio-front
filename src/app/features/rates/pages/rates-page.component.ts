@@ -5,6 +5,7 @@ import { finalize } from 'rxjs';
 import { CURRENCIES } from '../../../core/models/currency';
 import { ExchangeType } from '../../../core/models/exchange-type';
 import { RateService } from '../../../core/services/rate.service';
+import { SeoService } from '../../../core/services/seo.service';
 import { truncateTo2Decimals } from '../../../core/utils/number.util';
 
 import { AdBannerComponent } from '../../../shared/components/ad-banner.component';
@@ -112,6 +113,38 @@ const STALENESS_MS = 300_000;
           }
         </section>
       </div>
+
+      <section class="seo-content">
+        <h2>Dólar hoy en Venezuela: tasas de cambio en tiempo real</h2>
+        <p>
+          Velocambio te muestra en tiempo real el precio del dólar en Venezuela, la tasa
+          oficial del BCV, el dólar paralelo (promedio del mercado), el euro y el USDT P2P,
+          todos convertidos a bolívares (VES). También puedes usar el conversor para calcular
+          cuántos bolívares equivalen a dólares, euros o USDT al instante.
+        </p>
+        <h3>Dólar oficial (BCV)</h3>
+        <p>
+          El tipo de cambio oficial del Banco Central de Venezuela es la referencia para
+          transacciones legales en el país. Consulta aquí el valor del dólar BCV hoy,
+          actualizado automáticamente cuando el BCV publica una nueva tasa.
+        </p>
+        <h3>Dólar paralelo (promedio)</h3>
+        <p>
+          El dólar paralelo o promedio refleja la cotización de referencia del mercado no
+          oficial en Venezuela, calculada como promedio de distintas plataformas de
+          intercambio.
+        </p>
+        <h3>Euro oficial</h3>
+        <p>
+          Consulta cuánto está el euro hoy en bolívares (EUR/VES) según las fuentes públicas
+          de referencia del mercado venezolano.
+        </p>
+        <h3>USDT P2P (Binance)</h3>
+        <p>
+          El USDT es una criptomoneda estable respaldada por el dólar. Velocambio muestra el
+          precio promedio del USDT/VES según los anuncios activos del mercado P2P de Binance.
+        </p>
+      </section>
     </main>
   `,
   styles: [`
@@ -170,6 +203,30 @@ const STALENESS_MS = 300_000;
       height: 1px;
       background: var(--accent-border);
     }
+    .seo-content {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 4px 6px 0;
+    }
+    .seo-content h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 10px;
+      text-align: center;
+    }
+    .seo-content h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin: 18px 0 6px;
+    }
+    .seo-content p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin: 0 0 8px;
+    }
 
     @media (min-width: 768px) {
       .page {
@@ -205,6 +262,7 @@ export class RatesPageComponent {
   protected readonly CURRENCIES = CURRENCIES;
 
   private readonly rateService = inject(RateService);
+  private readonly seo = inject(SeoService);
   private readonly destroyRef = inject(DestroyRef);
 
   protected readonly isLoading = signal(false);
@@ -270,6 +328,13 @@ export class RatesPageComponent {
   ];
 
   constructor() {
+    this.seo.setPageMeta({
+      title: 'Velocambio — Dólar hoy en Venezuela: BCV, paralelo, euro y USDT',
+      description:
+        'Consulta la tasa del dólar hoy en Venezuela: dólar BCV oficial, dólar paralelo, euro y USDT P2P en bolívares (VES). Conversor de divisas en tiempo real.',
+      canonicalPath: '/',
+    });
+
     this.refreshData();
 
     effect(() => {

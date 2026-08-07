@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-calculator-page',
@@ -26,4 +28,15 @@ import { Component } from '@angular/core';
     `,
   ],
 })
-export class CalculatorPageComponent {}
+export class CalculatorPageComponent {
+  private readonly seo = inject(SeoService);
+
+  constructor() {
+    this.seo.setPageMeta({
+      title: 'Conversor de Divisas a Bolívares (VES) — Velocambio',
+      description:
+        'Convierte dólares (USD), euros (EUR) y USDT a bolívares (VES) con la calculadora de Velocambio, usando tasas de cambio en tiempo real.',
+      canonicalPath: '/calculator',
+    });
+  }
+}
