@@ -91,32 +91,9 @@ const STALENESS_MS = 300_000;
                 [value]="item.value()"
                 [isSelected]="selectedType() === item.type"
                 [loading]="item.loading()"
-                [sourceUrl]="item.sourceUrl"
-                [sourceLabel]="item.sourceLabel"
                 (selected)="selectRate(item.type, item.rate(), item.coinCode)"
               />
             }
-          </div>
-
-          <div class="sources">
-            <span class="sources-label">Fuentes:</span>
-            <a
-              [href]="sources.bcv"
-              target="_blank"
-              rel="noopener noreferrer"
-            >BCV</a>
-            <span class="sources-sep">·</span>
-            <a
-              [href]="sources.dolarapi"
-              target="_blank"
-              rel="noopener noreferrer"
-            >DolarAPI</a>
-            <span class="sources-sep">·</span>
-            <a
-              [href]="sources.binanceP2p"
-              target="_blank"
-              rel="noopener noreferrer"
-            >Binance P2P</a>
           </div>
         </section>
 
@@ -157,7 +134,7 @@ const STALENESS_MS = 300_000;
           la referencia para transacciones legales en el país. Consulta aquí el valor del dólar
           BCV hoy, actualizado automáticamente cuando el
           <a
-            [href]="sources.bcv"
+            href="https://www.bcv.org.ve/"
             target="_blank"
             rel="noopener noreferrer"
           >Banco Central de Venezuela</a> publica una nueva tasa.
@@ -181,7 +158,7 @@ const STALENESS_MS = 300_000;
           precio promedio del USDT/VES según los anuncios activos del
           <a routerLink="/blog/usdt-p2p-venezuela">mercado P2P</a> de
           <a
-            [href]="sources.binanceP2p"
+            href="https://p2p.binance.com/es/trade/all-payments/USDT?fiat=VES"
             target="_blank"
             rel="noopener noreferrer"
           >Binance</a>, una de las formas más usadas de guardar valor en Venezuela.
@@ -246,28 +223,6 @@ const STALENESS_MS = 300_000;
       display: flex;
       flex-direction: column;
       gap: 10px;
-    }
-    .sources {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      font-size: 0.72rem;
-      color: var(--text-muted);
-      padding-top: 2px;
-    }
-    .sources-label {
-      font-weight: 600;
-    }
-    .sources a {
-      color: var(--text-muted);
-      text-decoration: none;
-      font-weight: 600;
-    }
-    .sources a:hover {
-      color: var(--accent);
-      text-decoration: underline;
     }
     .divider-mobile {
       width: 100%;
@@ -387,20 +342,12 @@ export class RatesPageComponent {
 
   protected readonly showDisclaimer = signal(true);
 
-  protected readonly sources = {
-    bcv: 'https://www.bcv.org.ve/',
-    dolarapi: 'https://ve.dolarapi.com/',
-    binanceP2p: 'https://p2p.binance.com/es/trade/all-payments/USDT?fiat=VES',
-  } as const;
-
   protected readonly rateCards = [
     {
       type: ExchangeType.oficialUsd,
       imagePath: CURRENCIES.usd.flagPath,
       nameType: 'BCV Oficial',
       coinCode: CURRENCIES.usd.code,
-      sourceUrl: 'https://www.bcv.org.ve/',
-      sourceLabel: 'BCV',
       rate: () => this.rates().oficial.value,
       value: () => this.rates().oficial.value,
       loading: () => this.rates().oficial.loading,
@@ -410,8 +357,6 @@ export class RatesPageComponent {
       imagePath: CURRENCIES.usd.flagPath,
       nameType: 'Promedio',
       coinCode: CURRENCIES.usd.code,
-      sourceUrl: 'https://ve.dolarapi.com/',
-      sourceLabel: 'DolarAPI',
       rate: () => this.rates().promedio.value,
       value: () => this.rates().promedio.value,
       loading: () => this.rates().promedio.loading,
@@ -421,8 +366,6 @@ export class RatesPageComponent {
       imagePath: CURRENCIES.eur.flagPath,
       nameType: 'Euro',
       coinCode: CURRENCIES.eur.code,
-      sourceUrl: 'https://www.bcv.org.ve/',
-      sourceLabel: 'BCV',
       rate: () => this.rates().euro.value,
       value: () => this.rates().euro.value,
       loading: () => this.rates().euro.loading,
@@ -432,8 +375,6 @@ export class RatesPageComponent {
       imagePath: CURRENCIES.usdt.flagPath,
       nameType: 'USDT P2P',
       coinCode: CURRENCIES.usdt.code,
-      sourceUrl: 'https://p2p.binance.com/es/trade/all-payments/USDT?fiat=VES',
-      sourceLabel: 'Binance P2P',
       rate: () => this.rates().p2p.value,
       value: () => this.rates().p2p.value,
       loading: () => this.rates().p2p.loading,
