@@ -4,39 +4,56 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   selector: 'app-exchange-rate-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <button
-      class="card"
-      [class.selected]="isSelected()"
-      [class.loading]="loading()"
-      (click)="selected.emit()"
-      type="button"
-    >
-      <div class="left">
-        @if (loading()) {
-          <span class="skeleton flag-skeleton"></span>
-          <span class="skeleton name-skeleton"></span>
-        } @else {
-          <img
-            [src]="imagePath()"
-            [alt]="nameType()"
-            class="flag"
-            width="28"
-            height="18"
-            loading="lazy"
-          />
-          <span class="name">{{ nameType() }}</span>
-        }
-      </div>
-      <div class="right">
-        @if (loading()) {
-          <span class="skeleton value-skeleton"></span>
-        } @else if (value() !== null) {
-          <span class="value">{{ value()!.toLocaleString('es-VE', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) }} VES</span>
-        }
-      </div>
-    </button>
+    <div class="rate-card">
+      <button
+        class="card"
+        [class.selected]="isSelected()"
+        [class.loading]="loading()"
+        (click)="selected.emit()"
+        type="button"
+      >
+        <div class="left">
+          @if (loading()) {
+            <span class="skeleton flag-skeleton"></span>
+            <span class="skeleton name-skeleton"></span>
+          } @else {
+            <img
+              [src]="imagePath()"
+              [alt]="nameType()"
+              class="flag"
+              width="28"
+              height="18"
+              loading="lazy"
+            />
+            <span class="name">{{ nameType() }}</span>
+          }
+        </div>
+        <div class="right">
+          @if (loading()) {
+            <span class="skeleton value-skeleton"></span>
+          } @else if (value() !== null) {
+            <span class="value">{{ value()!.toLocaleString('es-VE', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) }} VES</span>
+          }
+        </div>
+      </button>
+      @if (sourceUrl()) {
+        <a
+          class="source"
+          [href]="sourceUrl()"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {{ sourceLabel() }} ↗
+        </a>
+      }
+    </div>
   `,
   styles: [`
+    .rate-card {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
     .card {
       width: 100%;
       height: 60px;
@@ -126,6 +143,17 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
       height: 14px;
       border-radius: 4px;
     }
+    .source {
+      align-self: flex-end;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding-right: 8px;
+    }
+    .source:hover {
+      color: var(--accent);
+    }
   `]
 })
 export class ExchangeRateCardComponent {
@@ -134,6 +162,8 @@ export class ExchangeRateCardComponent {
   readonly value = input.required<number | null>();
   readonly isSelected = input(false);
   readonly loading = input(false);
+  readonly sourceUrl = input('');
+  readonly sourceLabel = input('Fuente');
 
   readonly selected = output<void>();
 }
