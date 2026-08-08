@@ -70,12 +70,6 @@ import { ArticleService } from '../services/article.service';
           </div>
         </article>
 
-        @defer (on viewport) {
-          <app-ad-banner position="bottom" />
-        } @placeholder {
-          <div style="height: 50px"></div>
-        }
-
         <section class="related">
           <h2>Sigue leyendo</h2>
           <div class="related-grid">

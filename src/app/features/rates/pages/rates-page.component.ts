@@ -115,12 +115,6 @@ const STALENESS_MS = 300_000;
             <div style="height: 80px"></div>
           }
 
-          @defer (on viewport) {
-            <app-ad-banner position="bottom" />
-          } @placeholder {
-            <div style="height: 50px"></div>
-          }
-
           <app-footer />
         </section>
       </div>
