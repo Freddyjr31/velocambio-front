@@ -6,6 +6,8 @@ import { finalize } from 'rxjs';
 
 import { CURRENCIES } from '../../../core/models/currency';
 import { ExchangeType } from '../../../core/models/exchange-type';
+import { RateBrechasResponse } from '../../../core/models/rate-brecha';
+import { RateVariationResponse } from '../../../core/models/rate-variation';
 import { RateService } from '../../../core/services/rate.service';
 import { SeoService } from '../../../core/services/seo.service';
 import { truncateTo2Decimals } from '../../../core/utils/number.util';
@@ -91,6 +93,9 @@ const STALENESS_MS = 300_000;
                 [value]="item.value()"
                 [isSelected]="selectedType() === item.type"
                 [loading]="item.loading()"
+                [brecha]="item.brecha()"
+                [variacion24h]="item.variacion24h()"
+                [variacion7d]="item.variacion7d()"
                 (selected)="selectRate(item.type, item.rate(), item.coinCode)"
               />
             }
@@ -329,6 +334,8 @@ export class RatesPageComponent {
   private cooldownTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly rates = signal(mockRates());
+  protected readonly variaciones = signal<RateVariationResponse | null>(null);
+  protected readonly brechas = signal<RateBrechasResponse | null>(null);
 
   protected readonly selectedType = signal<ExchangeType>(ExchangeType.oficialUsd);
   protected readonly selectedRate = signal<number>(93.456);
@@ -351,6 +358,9 @@ export class RatesPageComponent {
       rate: () => this.rates().oficial.value,
       value: () => this.rates().oficial.value,
       loading: () => this.rates().oficial.loading,
+      brecha: () => null,
+      variacion24h: () => this.variaciones()?.rates.usd_oficial.variacion_24h ?? null,
+      variacion7d: () => this.variaciones()?.rates.usd_oficial.variacion_7d ?? null,
     },
     {
       type: ExchangeType.averageUsd,
@@ -360,6 +370,9 @@ export class RatesPageComponent {
       rate: () => this.rates().promedio.value,
       value: () => this.rates().promedio.value,
       loading: () => this.rates().promedio.loading,
+      brecha: () => this.brechas()?.brechas.usd_paralelo.brecha ?? null,
+      variacion24h: () => this.variaciones()?.rates.usd_paralelo.variacion_24h ?? null,
+      variacion7d: () => this.variaciones()?.rates.usd_paralelo.variacion_7d ?? null,
     },
     {
       type: ExchangeType.oficialEur,
@@ -369,6 +382,9 @@ export class RatesPageComponent {
       rate: () => this.rates().euro.value,
       value: () => this.rates().euro.value,
       loading: () => this.rates().euro.loading,
+      brecha: () => this.brechas()?.brechas.eur.brecha ?? null,
+      variacion24h: () => this.variaciones()?.rates.eur.variacion_24h ?? null,
+      variacion7d: () => this.variaciones()?.rates.eur.variacion_7d ?? null,
     },
     {
       type: ExchangeType.p2pUsdt,
@@ -378,6 +394,9 @@ export class RatesPageComponent {
       rate: () => this.rates().p2p.value,
       value: () => this.rates().p2p.value,
       loading: () => this.rates().p2p.loading,
+      brecha: () => this.brechas()?.brechas.usdt.brecha ?? null,
+      variacion24h: () => this.variaciones()?.rates.usdt.variacion_24h ?? null,
+      variacion7d: () => this.variaciones()?.rates.usdt.variacion_7d ?? null,
     },
   ];
 
@@ -430,7 +449,7 @@ export class RatesPageComponent {
     this.isLoading.set(true);
     this.refreshing.set(true);
     this.refreshDisabled.set(true);
-    this.pendingCount = 4;
+    this.pendingCount = 6;
     this.gotData = false;
 
     const subs = [
@@ -469,6 +488,52 @@ export class RatesPageComponent {
           },
         });
     });
+
+    this.rateService
+      .getVariaciones()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.pendingCount -= 1;
+          if (this.pendingCount === 0) this.finishRefresh();
+        }),
+      )
+      .subscribe({
+        next: (res) => {
+          this.gotData = true;
+          this.variaciones.set(res);
+        },
+        error: () => this.variaciones.set(null),
+      });
+
+    this.rateService
+      .getBrechas()
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => {
+          this.pendingCount -= 1;
+          if (this.pendingCount === 0) this.finishRefresh();
+        }),
+      )
+      .subscribe({
+        next: (res) => {
+          this.gotData = true;
+          this.brechas.set(res);
+        },
+        error: () => this.brechas.set(null),
+      });
+  }
+
+  private finishRefresh(): void {
+    this.isLoading.set(false);
+    this.refreshing.set(false);
+    if (this.gotData) {
+      this.lastUpdated.set(new Date());
+    }
+    this.cooldownTimer = setTimeout(
+      () => this.refreshDisabled.set(false),
+      REFRESH_COOLDOWN_MS,
+    );
   }
 
   private checkAutoRefresh(): void {

@@ -36,6 +36,11 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://velocambio.vercel.app/historico</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>https://velocambio.vercel.app/privacy-policy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>

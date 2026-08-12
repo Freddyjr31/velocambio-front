@@ -7,4 +7,7 @@ export const API_ENDPOINTS = {
   usdPromedio: '/rates/usd_promedio',
   euro: '/rates/eur',
   p2p: '/rates/usdt',
+  variaciones: '/rates/variaciones',
+  brechas: '/rates/brechas',
+  historicoBcv: '/rates/historicos/bcv',
 } as const;

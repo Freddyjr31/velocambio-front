@@ -33,6 +33,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'historico',
+    loadComponent: () =>
+      import('./features/historico/pages/historico-page.component').then(
+        (m) => m.HistoricoPageComponent,
+      ),
+  },
+  {
     path: 'terms',
     loadComponent: () =>
       import('./features/terms/pages/terms-page.component').then(

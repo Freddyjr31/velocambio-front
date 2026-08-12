@@ -32,6 +32,19 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
           <span class="skeleton value-skeleton"></span>
         } @else if (value() !== null) {
           <span class="value">{{ value()!.toLocaleString('es-VE', { minimumFractionDigits: 3, maximumFractionDigits: 3 }) }} VES</span>
+          @if (brecha() !== null) {
+            <span class="brecha" aria-hidden="true">▲ {{ formatPercent(brecha()!) }} vs BCV</span>
+          }
+          @if (variacion24h() !== null || variacion7d() !== null) {
+            <span class="variaciones">
+              @if (variacion24h() !== null) {
+                <span class="variacion" [class.up]="variacionClass(variacion24h()!) === 'up'" [class.down]="variacionClass(variacion24h()!) === 'down'">{{ variacionText(variacion24h()!) }} 24h</span>
+              }
+              @if (variacion7d() !== null) {
+                <span class="variacion" [class.up]="variacionClass(variacion7d()!) === 'up'" [class.down]="variacionClass(variacion7d()!) === 'down'">{{ variacionText(variacion7d()!) }} 7d</span>
+              }
+            </span>
+          }
         }
       </div>
     </button>
@@ -39,8 +52,8 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
   styles: [`
     .card {
       width: 100%;
-      height: 60px;
-      padding: 0 16px;
+      min-height: 60px;
+      padding: 10px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -95,8 +108,9 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
     }
     .right {
       display: flex;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
       min-width: 0;
     }
     .value {
@@ -109,6 +123,29 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
     }
     .card.selected .value {
       color: var(--accent);
+    }
+    .brecha {
+      font-weight: 600;
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .variaciones {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .variacion {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+    .variacion.up {
+      color: var(--accent);
+    }
+    .variacion.down {
+      color: var(--error);
     }
     .flag-skeleton {
       width: 28px;
@@ -134,6 +171,25 @@ export class ExchangeRateCardComponent {
   readonly value = input.required<number | null>();
   readonly isSelected = input(false);
   readonly loading = input(false);
+  readonly brecha = input<number | null>(null);
+  readonly variacion24h = input<number | null>(null);
+  readonly variacion7d = input<number | null>(null);
 
   readonly selected = output<void>();
+
+  protected formatPercent(value: number): string {
+    return `${value.toFixed(2)}%`;
+  }
+
+  protected variacionClass(value: number): 'up' | 'down' | 'flat' {
+    if (value > 0) return 'up';
+    if (value < 0) return 'down';
+    return 'flat';
+  }
+
+  protected variacionText(value: number): string {
+    const arrow = value > 0 ? '▲' : value < 0 ? '▼' : '•';
+    const sign = value > 0 ? '+' : '';
+    return `${arrow} ${sign}${value.toFixed(2)}%`;
+  }
 }
