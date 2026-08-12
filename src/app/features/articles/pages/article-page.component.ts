@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { SeoService } from '../../../core/services/seo.service';
 import { AdBannerComponent } from '../../../shared/components/ad-banner.component';
 import { FooterComponent } from '../../../shared/components/footer.component';
+import { MonetagAdComponent } from '../../../shared/components/monetag-ad.component';
 import { NavComponent } from '../../../shared/components/nav.component';
 import { LiveRateWidgetComponent } from '../components/live-rate-widget.component';
 import { Article } from '../models/article.model';
@@ -17,12 +18,16 @@ import { ArticleService } from '../services/article.service';
     NavComponent,
     FooterComponent,
     AdBannerComponent,
+    MonetagAdComponent,
     LiveRateWidgetComponent,
     RouterLink,
   ],
   template: `
     @if (article(); as article) {
       <app-nav />
+
+      <!--! MONETAG TAG (experimental) - quitar <app-monetag-ad /> y su import al revertir -->
+      <app-monetag-ad />
 
       <main class="page">
         @defer (on viewport) {
