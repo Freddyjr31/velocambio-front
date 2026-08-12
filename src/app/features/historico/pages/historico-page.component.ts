@@ -9,7 +9,6 @@ import { SeoService } from '../../../core/services/seo.service';
 
 import { AdBannerComponent } from '../../../shared/components/ad-banner.component';
 import { FooterComponent } from '../../../shared/components/footer.component';
-import { MonetagAdComponent } from '../../../shared/components/monetag-ad.component';
 import { NavComponent } from '../../../shared/components/nav.component';
 
 const PAGE_SIZE = 50;
@@ -17,12 +16,9 @@ const PAGE_SIZE = 50;
 @Component({
   selector: 'app-historico-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NavComponent, FooterComponent, AdBannerComponent, MonetagAdComponent, RouterLink],
+  imports: [NavComponent, FooterComponent, AdBannerComponent, RouterLink],
   template: `
     <app-nav />
-
-    <!--! MONETAG TAG (experimental) - quitar <app-monetag-ad /> y su import al revertir -->
-    <app-monetag-ad />
 
     <main class="page">
       @defer (on viewport) {
