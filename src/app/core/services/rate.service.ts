@@ -36,6 +36,8 @@ export class RateService {
   }
 
   getHistoricoBcv(page: number, pageSize: number): Observable<HistoricRatesResponse> {
+    //? Pendiente backend (velocambio-back): pedir parámetro sort=desc en
+    //? /rates/historico/bcv para evitar el mapeo inverso en la UI.
     return this.api.get<HistoricRatesResponse>(
       `${API_ENDPOINTS.historicoBcv}?page=${page}&page_size=${pageSize}`,
     );
