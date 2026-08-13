@@ -334,44 +334,20 @@ export class HistoricoPageComponent {
     this.loading.set(true);
     this.error.set(false);
 
-    //? El backend entrega el histórico en orden ascendente. Para mostrar la fecha
-    //? más reciente primero, la página mostrada N corresponde a la página del
-    //? backend (total_pages - N + 1) y los registros se invierten.
-    const totalPages = this.data()?.total_pages;
-    if (totalPages) {
-      this.fetchPage(page, totalPages);
-      return;
-    }
-
-    //* Primera carga: petición ligera (page_size=1) solo para conocer total_pages.
     this.rateService
-      .getHistoricoBcv(1, 1)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (meta) => this.fetchPage(page, meta.total_pages),
-        error: () => this.fail(),
-      });
-  }
-
-  private fetchPage(page: number, totalPages: number): void {
-    const backendPage = totalPages - page + 1;
-
-    this.rateService
-      .getHistoricoBcv(backendPage, PAGE_SIZE)
+      .getHistoricoBcv(page, PAGE_SIZE)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (res) => {
-          this.data.set({ ...res, page, history: [...res.history].reverse() });
-          this.currentPage.set(page);
+          this.data.set(res);
+          this.currentPage.set(res.page);
           this.loading.set(false);
         },
-        error: () => this.fail(),
+        error: () => {
+          this.error.set(true);
+          this.loading.set(false);
+        },
       });
-  }
-
-  private fail(): void {
-    this.error.set(true);
-    this.loading.set(false);
   }
 
   protected formatDate(iso: string): string {
