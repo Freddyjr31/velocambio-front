@@ -39,9 +39,6 @@ const PAGE_SIZE = 50;
       <section class="table-card">
         <div class="table-header">
           <h2 class="table-title">Evolución del dólar por fecha</h2>
-          @if (data(); as data) {
-            <span class="table-total">{{ data.total }} registros</span>
-          }
         </div>
 
         @if (loading()) {
@@ -159,11 +156,7 @@ const PAGE_SIZE = 50;
       color: var(--text-primary);
       margin: 0;
     }
-    .table-total {
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-    }
+
     .rows {
       display: flex;
       flex-direction: column;
